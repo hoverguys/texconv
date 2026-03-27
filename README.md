@@ -10,18 +10,18 @@ It doesn't work yet!
 
 ### Color formats
 
-| Value    | Description                       |
-| -------- | --------------------------------- |
-| `I4`     | Grayscale 4bit (I4)               |
-| `IA4`    | Grayscale + Alpha 4bit (I4A4)     |
-| `IA8`    | Grayscale + Alpha 8bit (I8A8)     |
-| `RGB565` | Limited color (R5G6B5)            |
-| `RGBA8`  | Full 8bpc color (A8R8G8B8)        |
-| `I8`     | Grayscale 8bit (I8)               |
-| `RGB5A3` | Limited color and alpha (R4B4G4A3 |
-| `A8`     | Alpha-only 8bit (A8)              |
-| `CI4`    | Palette-indexed 4bit (CI4)        |
-| `CI8`    | Palette-indexed 8bit (CI8)        |
+| Value    | Description                                |
+| -------- | ------------------------------------------ |
+| `I4`     | Grayscale 4bit (I4)                        |
+| `IA4`    | Grayscale + Alpha 4bit (I4A4)              |
+| `IA8`    | Grayscale + Alpha 8bit (I8A8)              |
+| `RGB565` | Limited color (R5G6B5)                     |
+| `RGBA8`  | Full 8bpc color (A8R8G8B8)                 |
+| `I8`     | Grayscale 8bit (I8)                        |
+| `RGB5A3` | Limited color and alpha (R4B4G4A3\|R5B5G5) |
+| `A8`     | Alpha-only 8bit (A8)                       |
+| `CI4`    | Palette-indexed 4bit (CI4)                 |
+| `CI8`    | Palette-indexed 8bit (CI8)                 |
 
 ### Palette color formats
 
