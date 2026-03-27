@@ -23,6 +23,10 @@
             packages = [
               zig
               zig.zls
+
+              # Markdown stuff
+              pkgs.dprint
+              pkgs.marksman
             ];
           };
         }

@@ -9,6 +9,11 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    const cli = b.dependency("cli", .{
+        .target = target,
+        .optimize = optimize,
+    });
+
     const module = b.addModule("texconv", .{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
@@ -16,6 +21,7 @@ pub fn build(b: *std.Build) void {
     });
 
     module.addImport("zigimg", zigimg.module("zigimg"));
+    module.addImport("cli", cli.module("cli"));
 
     const exe = b.addExecutable(.{
         .name = "texconv",
