@@ -42,12 +42,15 @@ pub fn build(b: *std.Build) void {
     run_step.dependOn(&run_cmd.step);
 
     // Testing
+    const test_module = b.addModule("texconv", .{
+        .root_source_file = b.path("src/test.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    test_module.addImport("zigimg", zigimg.module("zigimg"));
+
     const tex_unit_tests = b.addTest(.{
-        .root_module = b.addModule("texconv", .{
-            .root_source_file = b.path("src/elf.zig"),
-            .target = target,
-            .optimize = optimize,
-        }),
+        .root_module = test_module,
     });
 
     const run_tex_unit_tests = b.addRunArtifact(tex_unit_tests);

@@ -14,6 +14,7 @@ const Header = extern struct {
     data_offset: u32,
     palette_offset: u32,
     palette_entries: u16,
+    _padding: [14]u8,
 };
 
 pub fn writeTexture(
@@ -27,6 +28,9 @@ pub fn writeTexture(
     mipmap_min: u8,
     mipmap_max: u8,
 ) !void {
+    comptime {
+        std.debug.assert(@sizeOf(Header) == 32);
+    }
 
     // Skip header for now (we need to write data first)
     try writer.seekTo(32);
@@ -52,6 +56,7 @@ pub fn writeTexture(
         .data_offset = 32,
         .palette_offset = 0,
         .palette_entries = 0,
+        ._padding = @splat(0),
     };
 
     try writer.interface.flush();

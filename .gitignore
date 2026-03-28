@@ -2,3 +2,4 @@
 .helix/
 .zig-cache
 zig-out
+/*.bin
