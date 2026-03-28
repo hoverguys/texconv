@@ -1,13 +1,31 @@
 const std = @import("std");
 const zigimg = @import("zigimg");
 
+pub fn writeI8(writer: *std.Io.Writer, image: *zigimg.Image) !void {
+    var it = TileIterator.make(image, 8, 4);
+    while (it.next()) |point| {
+        var block: [32]u8 = undefined;
+        var index: usize = 0;
+        for (0..4) |chunk_y| {
+            for (0..8) |chunk_x| {
+                const x = point.x * 8 + chunk_x;
+                const y = point.y * 4 + chunk_y;
+                const pixel = image.pixels.grayscale8[x + image.width * y];
+                block[index] = pixel.value;
+                index += 1;
+            }
+        }
+        _ = try writer.write(&block);
+    }
+}
+
 pub fn writeRGBA8(writer: *std.Io.Writer, image: *zigimg.Image) !void {
     var it = TileIterator.make(image, 4, 4);
     while (it.next()) |point| {
         var block: [64]u8 = undefined;
         for (0..16) |index| {
-            const x = (point.x * 4) + (index % 4);
-            const y = (point.y * 4) + (index / 4);
+            const x = point.x * 4 + (index % 4);
+            const y = point.y * 4 + (index / 4);
 
             const pixel = image.pixels.rgba32[x + image.width * y];
             block[index * 2] = pixel.a;
@@ -25,8 +43,8 @@ pub fn writeRGB565(writer: *std.Io.Writer, image: *zigimg.Image) !void {
         var block: [32]u8 = undefined;
         var endianWriter = std.Io.Writer.fixed(&block);
         for (0..16) |index| {
-            const x = (point.x * 4) + (index % 4);
-            const y = (point.y * 4) + (index / 4);
+            const x = point.x * 4 + (index % 4);
+            const y = point.y * 4 + (index / 4);
 
             const pixel = image.pixels.rgb565[x + image.width * y];
             try endianWriter.writeStruct(pixel, .big);
@@ -40,7 +58,7 @@ const TileIterator = struct {
 
     current: usize,
     limit: usize,
-    rows: usize,
+    cols: usize,
 
     pub fn make(image: *zigimg.Image, tile_width: u8, tile_height: u8) Self {
         const rows = image.height / tile_height;
@@ -49,7 +67,7 @@ const TileIterator = struct {
         return .{
             .current = 0,
             .limit = rows * cols,
-            .rows = rows,
+            .cols = cols,
         };
     }
 
@@ -59,8 +77,8 @@ const TileIterator = struct {
             return null;
         }
         return .{
-            .x = (self.current % self.rows),
-            .y = (self.current / self.rows),
+            .x = self.current % self.cols,
+            .y = self.current / self.cols,
         };
     }
 };

@@ -33,6 +33,10 @@ fn compareColorTest(color_format: options.ColorFormat, test_file: []const u8) !v
     try std.testing.expectEqualSlices(u8, snapshot, generated);
 }
 
+test "PNG encodes in I8 correctly" {
+    try compareColorTest(.I8, "./testdata/sample.i8.bin");
+}
+
 test "PNG encodes in RGBA8 correctly" {
     try compareColorTest(.RGBA8, "./testdata/sample.rgba8.bin");
 }

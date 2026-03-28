@@ -36,6 +36,10 @@ pub fn writeTexture(
     try writer.seekTo(32);
 
     switch (color_format) {
+        .I8 => {
+            try image.convert(allocator, .grayscale8);
+            try colors.writeI8(&writer.interface, image);
+        },
         .RGBA8 => {
             try image.convert(allocator, .rgba32);
             try colors.writeRGBA8(&writer.interface, image);
