@@ -6,7 +6,26 @@ Encodes many image formats to GC-friendly image formats.
 
 ## Usage
 
-It doesn't work yet!
+```
+USAGE:
+  texconv [OPTIONS]
+
+OPTIONS:
+      --wrap <VALUE>             Wrapping strategy (valid values: clamp, repeat, mirror)
+      --filter <VALUE>           Filter (valid values: near, bilinear, trilinear)
+      --color-format <VALUE>     Output color format (see README for list)
+      --palette-format <VALUE>   Palette color format (see README for list)
+      --mipmap-min <VALUE>       Minimum mipmap level (0-10)
+      --mipmap-max <VALUE>       Maximum mipmap level (0-10)
+      --in <VALUE>               Image file to convert
+      --out <VALUE>              Output file
+  -h, --help                     Show this help output.
+      --color <VALUE>            When to use colors (*auto*, never, always).
+```
+
+Example: `texconv --in ./testdata/alpha.png --color-format IA8 --out test.bin`
+
+See below for color and palette formats (at time of writing not all of them are implemented)
 
 ### Color formats
 
