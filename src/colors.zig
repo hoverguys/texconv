@@ -38,6 +38,39 @@ pub fn writeI8(writer: *std.Io.Writer, image: *zigimg.Image) !void {
     }
 }
 
+pub fn writeIA4(writer: *std.Io.Writer, image: *zigimg.Image) !void {
+    var it = TileIterator.make(image, 8, 4);
+    while (it.next()) |point| {
+        var block: [32]u8 = undefined;
+        var index: usize = 0;
+        for (0..4) |chunk_y| {
+            for (0..8) |chunk_x| {
+                const x = point.x * 8 + chunk_x;
+                const y = point.y * 4 + chunk_y;
+                const pixel = image.pixels.grayscale8Alpha[x + image.width * y];
+                block[index] = pixel.value & 0xf0 | pixel.alpha >> 4;
+                index += 1;
+            }
+        }
+        _ = try writer.write(&block);
+    }
+}
+
+pub fn writeIA8(writer: *std.Io.Writer, image: *zigimg.Image) !void {
+    var it = TileIterator.make(image, 4, 4);
+    while (it.next()) |point| {
+        var block: [32]u8 = undefined;
+        for (0..16) |index| {
+            const x = point.x * 4 + (index % 4);
+            const y = point.y * 4 + (index / 4);
+            const pixel = image.pixels.grayscale8Alpha[x + image.width * y];
+            block[index * 2] = pixel.value;
+            block[index * 2 + 1] = pixel.alpha;
+        }
+        _ = try writer.write(&block);
+    }
+}
+
 pub fn writeRGBA8(writer: *std.Io.Writer, image: *zigimg.Image) !void {
     var it = TileIterator.make(image, 4, 4);
     while (it.next()) |point| {

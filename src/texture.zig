@@ -44,6 +44,14 @@ pub fn writeTexture(
             try image.convert(allocator, .grayscale8);
             try colors.writeI8(&writer.interface, image);
         },
+        .IA4 => {
+            try image.convert(allocator, .grayscale8Alpha);
+            try colors.writeIA4(&writer.interface, image);
+        },
+        .IA8 => {
+            try image.convert(allocator, .grayscale8Alpha);
+            try colors.writeIA8(&writer.interface, image);
+        },
         .RGBA8 => {
             try image.convert(allocator, .rgba32);
             try colors.writeRGBA8(&writer.interface, image);

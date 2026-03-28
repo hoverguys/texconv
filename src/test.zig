@@ -91,3 +91,19 @@ test "PNG (alpha test) encodes in RGB5A3 correctly" {
         "./testdata/alpha.rgb5a3.bin",
     );
 }
+
+test "PNG (alpha test) encodes in IA4 correctly" {
+    try compareColorTest(
+        .IA4,
+        alpha_sample,
+        "./testdata/alpha.ia4.bin",
+    );
+}
+
+test "PNG (alpha test) encodes in IA8 correctly" {
+    try compareColorTest(
+        .IA8,
+        alpha_sample,
+        "./testdata/alpha.ia8.bin",
+    );
+}
