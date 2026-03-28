@@ -36,6 +36,10 @@ pub fn writeTexture(
     try writer.seekTo(32);
 
     switch (color_format) {
+        .I4 => {
+            try image.convert(allocator, .grayscale4);
+            try colors.writeI4(&writer.interface, image);
+        },
         .I8 => {
             try image.convert(allocator, .grayscale8);
             try colors.writeI8(&writer.interface, image);
@@ -47,6 +51,10 @@ pub fn writeTexture(
         .RGB565 => {
             try image.convert(allocator, .rgb565);
             try colors.writeRGB565(&writer.interface, image);
+        },
+        .RGB5A3 => {
+            try image.convert(allocator, .rgba32);
+            try colors.writeRGB5A3(&writer.interface, image);
         },
         else => return error.unsupportedColorFormat,
     }

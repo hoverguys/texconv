@@ -4,12 +4,12 @@ const zigimg = @import("zigimg");
 const texture = @import("./texture.zig");
 const options = @import("./options.zig");
 
-fn compareColorTest(color_format: options.ColorFormat, test_file: []const u8) !void {
+fn compareColorTest(color_format: options.ColorFormat, sample_file: []const u8, test_file: []const u8) !void {
     var tmp = std.testing.tmpDir(.{});
     defer tmp.cleanup();
 
     var read_buffer: [zigimg.io.DEFAULT_BUFFER_SIZE]u8 = undefined;
-    var image = try zigimg.Image.fromFilePath(std.testing.allocator, "./testdata/sample.png", read_buffer[0..]);
+    var image = try zigimg.Image.fromFilePath(std.testing.allocator, sample_file, read_buffer[0..]);
     defer image.deinit(std.testing.allocator);
 
     var file = try tmp.dir.createFile("test.bin", .{ .read = true });
@@ -33,14 +33,61 @@ fn compareColorTest(color_format: options.ColorFormat, test_file: []const u8) !v
     try std.testing.expectEqualSlices(u8, snapshot, generated);
 }
 
-test "PNG encodes in I8 correctly" {
-    try compareColorTest(.I8, "./testdata/sample.i8.bin");
+const main_sample = "./testdata/sample.png";
+const alpha_sample = "./testdata/alpha.png";
+
+test "PNG encodes in I4 correctly" {
+    try compareColorTest(
+        .I4,
+        main_sample,
+        "./testdata/sample.i4.bin",
+    );
 }
 
-test "PNG encodes in RGBA8 correctly" {
-    try compareColorTest(.RGBA8, "./testdata/sample.rgba8.bin");
+test "PNG encodes in I8 correctly" {
+    try compareColorTest(
+        .I8,
+        main_sample,
+        "./testdata/sample.i8.bin",
+    );
+}
+
+test "PNG (no alpha) encodes in RGBA8 correctly" {
+    try compareColorTest(
+        .RGBA8,
+        main_sample,
+        "./testdata/sample.rgba8.bin",
+    );
+}
+
+test "PNG (alpha test) encodes in RGBA8 correctly" {
+    try compareColorTest(
+        .RGBA8,
+        alpha_sample,
+        "./testdata/alpha.rgba8.bin",
+    );
 }
 
 test "PNG encodes in RGB565 correctly" {
-    try compareColorTest(.RGB565, "./testdata/sample.rgb565.bin");
+    try compareColorTest(
+        .RGB565,
+        main_sample,
+        "./testdata/sample.rgb565.bin",
+    );
+}
+
+test "PNG (no alpha) encodes in RGB5A3 correctly" {
+    try compareColorTest(
+        .RGB5A3,
+        main_sample,
+        "./testdata/sample.rgb5a3.bin",
+    );
+}
+
+test "PNG (alpha test) encodes in RGB5A3 correctly" {
+    try compareColorTest(
+        .RGB5A3,
+        alpha_sample,
+        "./testdata/alpha.rgb5a3.bin",
+    );
 }
