@@ -35,6 +35,9 @@ pub fn writeTexture(
     // Skip header for now (we need to write data first)
     try writer.seekTo(32);
 
+    var palette_entries: u16 = 0;
+    var palette_offset: u32 = 0;
+
     switch (color_format) {
         .I4 => {
             try image.convert(allocator, .grayscale4);
@@ -52,6 +55,10 @@ pub fn writeTexture(
             try image.convert(allocator, .grayscale8Alpha);
             try colors.writeIA8(&writer.interface, image);
         },
+        .A8 => {
+            try image.convert(allocator, .grayscale8Alpha);
+            try colors.writeA8(&writer.interface, image);
+        },
         .RGBA8 => {
             try image.convert(allocator, .rgba32);
             try colors.writeRGBA8(&writer.interface, image);
@@ -64,7 +71,41 @@ pub fn writeTexture(
             try image.convert(allocator, .rgba32);
             try colors.writeRGB5A3(&writer.interface, image);
         },
-        else => return error.unsupportedColorFormat,
+        .CI4 => {
+            if (!image.pixels.isIndexed()) {
+                return error.nonPalettedImage;
+            }
+            if (image.pixels.getPalette().?.len > 0x10) {
+                return error.paletteTooLarge;
+            }
+            try colors.writeCI4(&writer.interface, image);
+        },
+        .CI8 => {
+            if (!image.pixels.isIndexed()) {
+                return error.nonPalettedImage;
+            }
+            if (image.pixels.getPalette().?.len > 0x100) {
+                return error.paletteTooLarge;
+            }
+            try colors.writeCI8(&writer.interface, image);
+        },
+    }
+
+    // Flush changes so we can seek/obtain position
+    try writer.interface.flush();
+
+    if (color_format == .CI4 or color_format == .CI8) {
+        const palette = switch (image.pixelFormat()) {
+            .indexed4 => image.pixels.indexed4.palette,
+            .indexed8 => image.pixels.indexed8.palette,
+            else => return error.unexpectedPixelFormat,
+        };
+        palette_entries = @truncate(palette.len);
+        palette_offset = std.mem.alignForward(u32, @truncate(writer.pos), 32);
+
+        try writer.seekTo(palette_offset);
+        try colors.writePalette(&writer.interface, palette, palette_format);
+        try writer.interface.flush();
     }
 
     // Make header
@@ -78,12 +119,11 @@ pub fn writeTexture(
         .mipmap = mipmap_min | (mipmap_max << 4),
         .filter = filter_bits | (wrap_bits << 2) | (wrap_bits << 5),
         .data_offset = 32,
-        .palette_offset = 0,
-        .palette_entries = 0,
+        .palette_offset = palette_offset,
+        .palette_entries = palette_entries,
         ._padding = @splat(0),
     };
 
-    try writer.interface.flush();
     try writer.seekTo(0);
     try writer.interface.writeStruct(header, .big);
     try writer.interface.flush();
