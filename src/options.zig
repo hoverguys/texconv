@@ -43,17 +43,6 @@ pub const ColorFormat = enum {
     }
 };
 
-pub const Endianess = enum {
-    const Self = @This();
-
-    big,
-    small,
-
-    pub fn parse(str: []const u8) !Self {
-        return std.meta.stringToEnum(Self, str) orelse return error.InvalidChoice;
-    }
-};
-
 pub const WrapStrategy = enum {
     const Self = @This();
 
@@ -63,6 +52,14 @@ pub const WrapStrategy = enum {
 
     pub fn parse(str: []const u8) !Self {
         return std.meta.stringToEnum(Self, str) orelse return error.InvalidChoice;
+    }
+
+    pub fn value(self: Self) u2 {
+        return switch (self) {
+            .clamp => 0,
+            .repeat => 1,
+            .mirror => 2,
+        };
     }
 };
 
@@ -75,5 +72,13 @@ pub const Filter = enum {
 
     pub fn parse(str: []const u8) !Self {
         return std.meta.stringToEnum(Self, str) orelse return error.InvalidChoice;
+    }
+
+    pub fn value(self: Self) u2 {
+        return switch (self) {
+            .near => 0,
+            .bilinear => 2,
+            .trilinear => 3,
+        };
     }
 };
