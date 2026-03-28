@@ -40,6 +40,10 @@ pub fn writeTexture(
             try image.convert(allocator, .rgba32);
             try colors.writeRGBA8(&writer.interface, image);
         },
+        .RGB565 => {
+            try image.convert(allocator, .rgb565);
+            try colors.writeRGB565(&writer.interface, image);
+        },
         else => return error.unsupportedColorFormat,
     }
 

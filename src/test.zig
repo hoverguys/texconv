@@ -36,3 +36,7 @@ fn compareColorTest(color_format: options.ColorFormat, test_file: []const u8) !v
 test "PNG encodes in RGBA8 correctly" {
     try compareColorTest(.RGBA8, "./testdata/sample.rgba8.bin");
 }
+
+test "PNG encodes in RGB565 correctly" {
+    try compareColorTest(.RGB565, "./testdata/sample.rgb565.bin");
+}

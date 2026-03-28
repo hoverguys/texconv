@@ -19,6 +19,22 @@ pub fn writeRGBA8(writer: *std.Io.Writer, image: *zigimg.Image) !void {
     }
 }
 
+pub fn writeRGB565(writer: *std.Io.Writer, image: *zigimg.Image) !void {
+    var it = TileIterator.make(image, 4, 4);
+    while (it.next()) |point| {
+        var block: [32]u8 = undefined;
+        var endianWriter = std.Io.Writer.fixed(&block);
+        for (0..16) |index| {
+            const x = (point.x * 4) + (index % 4);
+            const y = (point.y * 4) + (index / 4);
+
+            const pixel = image.pixels.rgb565[x + image.width * y];
+            try endianWriter.writeStruct(pixel, .big);
+        }
+        _ = try writer.write(&block);
+    }
+}
+
 const TileIterator = struct {
     const Self = @This();
 
